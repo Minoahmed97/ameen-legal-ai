@@ -17,7 +17,7 @@ async function callGeminiApi(prompt: string): Promise<string> {
     throw new Error('مفتاح Gemini API غير متاح. يرجى التأكد من إضافة VITE_GEMINI_API_KEY في Cloudflare وإعادة البناء.');
   }
 
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${encodeURIComponent(apiKey)}`;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${encodeURIComponent(apiKey)}`;
 
   const response = await fetch(url, {
     method: 'POST',
