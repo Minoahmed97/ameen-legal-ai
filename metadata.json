@@ -1,0 +1,6 @@
+{
+  "name": "المستشار القانوني الذكي ومساعد المحامي",
+  "description": "منصة الاستشارات القانونية الذكية، دراسة القضايا، تفكيك مذكرات الخصوم، وصياغة المذكرات القضائية مع لوحة تحكم المالك وإدارة بيانات المحامي.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
