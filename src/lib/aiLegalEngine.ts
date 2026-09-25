@@ -1,15 +1,14 @@
-// 1. مفتاح API
-const GEMINI_API_KEY = 'AQ.Ab8RN6JZlqIN2xeafWSIHK1l6ZbJJMhXvVaW6adQMW2lX2670g';
+// 1. مفتاح API الصحيح الخاص بك من Google AI Studio
+const GEMINI_API_KEY = 'AQ.Ab8RN6Lz1qU9ADqICSGjrNzZvLsAolbymB6d6AkyllSnaUBeqw';
 
-// دالة الاتصال المباشر بـ Google Gemini API عبر Header
+// دالة الاتصال المباشر بـ Google Gemini API
 async function callGeminiApi(prompt: string): Promise<string> {
-  const url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY.trim()}`;
 
   const response = await fetch(url, {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json',
-      'x-goog-api-key': GEMINI_API_KEY.trim()
+      'Content-Type': 'application/json'
     },
     body: JSON.stringify({
       contents: [
