@@ -1,28 +1,15 @@
-// دالة جلب مفتاح الـ API من البيئة أو الذاكرة المحلية
-const getApiKey = (): string => {
-  const envKey = import.meta.env.VITE_GEMINI_API_KEY;
-  if (envKey && envKey.trim() !== '') return envKey.trim();
+// 1. مفتاح API
+const GEMINI_API_KEY = 'AQ.Ab8RN6JZlqIN2xeafWSIHK1l6ZbJJMhXvVaW6adQMW2lX2670g';
 
-  const localKey = localStorage.getItem('user_gemini_key');
-  if (localKey && localKey.trim() !== '') return localKey.trim();
-
-  return '';
-};
-
-// دالة الاتصال المباشر بـ Google Gemini API
+// دالة الاتصال المباشر بـ Google Gemini API عبر Header
 async function callGeminiApi(prompt: string): Promise<string> {
-  const apiKey = getApiKey();
-
-  if (!apiKey) {
-    throw new Error('مفتاح Gemini API غير متاح. يرجى التأكد من إضافة VITE_GEMINI_API_KEY في Cloudflare وإعادة البناء.');
-  }
-
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${encodeURIComponent(apiKey)}`;
+  const url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
 
   const response = await fetch(url, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      'x-goog-api-key': GEMINI_API_KEY.trim()
     },
     body: JSON.stringify({
       contents: [
@@ -43,7 +30,7 @@ async function callGeminiApi(prompt: string): Promise<string> {
   return data.candidates?.[0]?.content?.parts?.[0]?.text || 'لم يتم استلام رد من الذكاء الاصطناعي.';
 }
 
-// 1. التصنيفات القانونية
+// 2. التصنيفات القانونية
 export const CATEGORY_LABELS: Record<string, string> = {
   civil: 'القانون المدني',
   criminal: 'القانون الجنائي',
@@ -54,7 +41,7 @@ export const CATEGORY_LABELS: Record<string, string> = {
   general: 'استشارة قانونية عامة'
 };
 
-// 2. دالة تقديم الاستشارات القانونية
+// 3. دالة تقديم الاستشارات القانونية
 export async function generateLegalConsultation(prompt: string, category: string = 'general'): Promise<string> {
   const categoryLabel = CATEGORY_LABELS[category] || category;
   const fullPrompt = `أنت مستشار قانوني خبير ومتخصص في التشريعات والقوانين.
@@ -69,7 +56,7 @@ export async function generateLegalConsultation(prompt: string, category: string
   return await callGeminiApi(fullPrompt);
 }
 
-// 3. دالة تحليل القضايا والملفات
+// 4. دالة تحليل القضايا والملفات
 export async function analyzeLegalCase(facts: string, documents: string = ''): Promise<string> {
   const fullPrompt = `أنت خبير قانوني متخصص في تحليل القضايا والملفات القضائية.
 وقائع القضية:
@@ -86,7 +73,7 @@ ${documents ? `المستندات والأوراق المتاحة:\n${documents}
   return await callGeminiApi(fullPrompt);
 }
 
-// 4. دالة تفكيك مذكرات الخصوم
+// 5. دالة تفكيك مذكرات الخصوم
 export async function deconstructOpponentBrief(briefText: string): Promise<string> {
   const fullPrompt = `أنت محامي نقض وباحث قانوني متمارس. قم بتفكيك مذكرة الخصم التالية وتحليلها:
 نص مذكرة الخصم:
@@ -100,7 +87,7 @@ ${briefText}
   return await callGeminiApi(fullPrompt);
 }
 
-// 5. دالة صياغة العقود والعرائض
+// 6. دالة صياغة العقود والعرائض
 export async function draftLegalDocument(docType: string, details: string): Promise<string> {
   const fullPrompt = `أنت محامي محترف في صياغة العقود والعرائض والمذكرات القانونية.
 نوع المستند المطلوب: ${docType}
