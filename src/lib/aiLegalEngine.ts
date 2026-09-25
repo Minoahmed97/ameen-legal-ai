@@ -1,46 +1,20 @@
-// دالة جلب مفتاح الـ API
-const getApiKey = (): string => {
-  const envKey = import.meta.env.VITE_GEMINI_API_KEY;
-  if (envKey && envKey.trim() !== '') return envKey.trim();
-
-  const localKey = localStorage.getItem('user_gemini_key');
-  if (localKey && localKey.trim() !== '') return localKey.trim();
-
-  return '';
-};
-
-// دالة الاتصال بسيرفرات Google Gemini
+// دالة الاتصال المباشر بالسيرفر الداخلي للموقع
 async function callGeminiApi(prompt: string): Promise<string> {
-  const apiKey = getApiKey();
-
-  if (!apiKey) {
-    throw new Error('مفتاح Gemini API غير متاح في التطبيق. يرجى إضافته في إعدادات Cloudflare أو ملف .env');
-  }
-
-  const url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
-
-  const response = await fetch(url, {
+  const response = await fetch('/api/gemini', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'x-goog-api-key': apiKey // إرسال المفتاح عبر الهيدر المباشر
     },
-    body: JSON.stringify({
-      contents: [
-        {
-          parts: [{ text: prompt }]
-        }
-      ]
-    })
+    body: JSON.stringify({ prompt })
   });
 
+  const data = await response.json();
+
   if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    console.error('تفاصيل خطأ Gemini:', errorData);
-    throw new Error(errorData?.error?.message || `خطأ سيرفر جوجل (${response.status})`);
+    console.error('تفاصيل الخطأ من السيرفر:', data);
+    throw new Error(data.error?.message || data.error || `خطأ في الاتصال بالسيرفر (${response.status})`);
   }
 
-  const data = await response.json();
   return data.candidates?.[0]?.content?.parts?.[0]?.text || 'لم يتم استلام رد من الذكاء الاصطناعي.';
 }
 
